@@ -145,25 +145,12 @@ class TestGenericMap:
         # correctly in cases where the dimensions of the original map are
         # are exactly divisible by those of the output map as well as the cases
         # in which they aren't.
-        new_dimensions = (100, 200)
-        linear_resampled_map = self.map.resample(new_dimensions)
-        assert linear_resampled_map.shape[1] == new_dimensions[0]
-        assert linear_resampled_map.shape[0] == new_dimensions[1]
-
-        new_dimensions = (128, 256)
-        neighbor_resampled_map = self.map.resample(new_dimensions, method = 'neighbor')
-        assert neighbor_resampled_map.shape[1] == new_dimensions[0]
-        assert neighbor_resampled_map.shape[0] == new_dimensions[1]
-
-        new_dimensions = (512, 128)
-        nearest_resampled_map = self.map.resample(new_dimensions, method = 'nearest')
-        assert nearest_resampled_map.shape[1] == new_dimensions[0]
-        assert nearest_resampled_map.shape[0] == new_dimensions[1]
-
-        new_dimensions = (200, 200)
-        spline_resampled_map = self.map.resample(new_dimensions, method = 'spline')
-        assert spline_resampled_map.shape[1] == new_dimensions[0]
-        assert spline_resampled_map.shape[0] == new_dimensions[1]
+        dimension_list = [(100, 200), (128, 256), (512, 128), (200, 200)]
+        methods = ['linear', 'neighbor', 'nearest', 'spline']
+        for new_dimensions, sample_method in izip(dimension_list, methods):
+            resampled_map = self.map.resample(new_dimensions, method = sample_method)
+            assert resampled_map.shape[1] == new_dimensions[0]
+            assert resampled_map.shape[0] == new_dimensions[1]
 
     def test_resample_metadata(self):
         """
@@ -174,8 +161,8 @@ class TestGenericMap:
         # the original map are divisble by those of the output map.
         dimension_list = [(100, 200), (128, 256), (512, 128), (200, 200)]
         methods = ['linear', 'neighbor', 'nearest', 'spline']
-        for dimensions, method in izip(dimension_list, methods):
-            resampled_map = self.map.resample(dimensions, method)
+        for new_dimensions, sample_method in izip(dimension_list, methods):
+            resampled_map = self.map.resample(new_dimensions, method = sample_method)
             assert float(resampled_map.meta['cdelt1']) / self.map.meta['cdelt1'] \
                    == float(self.map.shape[1]) / resampled_map.shape[1]
             assert float(resampled_map.meta['cdelt2']) / self.map.meta['cdelt2'] \
